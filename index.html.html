@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Envuelta</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --crema: #F2EDE4; --arena: #D9C9B0; --terracota: #C47A5A;
+    --tostado: #7A5C44; --oscuro: #3A2E27; --salvia: #8A9E8C;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--crema); font-family: 'DM Sans', sans-serif; color: var(--oscuro); }
+  section[id], footer[id] { scroll-margin-top: 78px; }
+
+  /* ───────── NAV ───────── */
+  .nav {
+    background: var(--oscuro);
+    position: sticky; top: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 24px;
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif; font-weight: 300;
+    font-size: 28px; letter-spacing: 0.22em; color: var(--crema);
+    cursor: pointer; line-height: 1; text-decoration: none;
+  }
+  .nav-menu { display: flex; align-items: center; gap: 4px; }
+  .nav-link {
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--arena); text-decoration: none; cursor: pointer;
+    padding: 8px 14px; font-family: 'DM Sans', sans-serif;
+    transition: color 0.2s; background: none; border: none;
+  }
+  .nav-link:hover { color: var(--crema); }
+
+  .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 6px; }
+  .hamburger span { width: 24px; height: 2px; background: var(--crema); transition: 0.3s; }
+
+  /* ───────── BANNER (Canva fijo, sin acceso) ───────── */
+  #inicio { background: var(--oscuro); }
+  .banner {
+    position: relative; width: 100%; max-width: 880px; margin: 0 auto;
+    overflow: hidden; background: var(--oscuro);
+  }
+  .banner-img { display: none; width: 100%; height: auto; vertical-align: middle; }
+  .banner.con-img .banner-img { display: block; }
+  .banner.con-img .banner-default { display: none; }
+  .banner-default {
+    position: relative; aspect-ratio: 827 / 602;
+    background: linear-gradient(160deg, #312620 0%, var(--tostado) 60%, var(--terracota) 128%);
+    display: flex; align-items: center; justify-content: center; text-align: center; padding: 36px 24px;
+  }
+  .banner-default::after { content: ''; position: absolute; inset: 16px; border: 1px solid rgba(242,237,228,0.32); pointer-events: none; }
+  .hero-inner { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
+  .hero-label { font-size: 10px; letter-spacing: 0.42em; text-transform: uppercase; color: var(--arena); margin-bottom: 18px; }
+  .hero-logo { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(46px, 7vw, 66px); letter-spacing: 0.2em; color: var(--crema); line-height: 1.05; }
+  .hero-divider { width: 54px; height: 1px; background: var(--terracota); margin: 18px 0 14px; }
+  .hero-sub { font-size: 11px; letter-spacing: 0.4em; text-transform: uppercase; color: var(--arena); }
+
+  /* franja de botones */
+  .franja {
+    background: var(--crema);
+    border-bottom: 1px solid var(--arena);
+    display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;
+    padding: 18px 20px;
+  }
+  .franja-btn {
+    background: var(--oscuro); color: var(--crema);
+    font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase;
+    padding: 12px 26px; border: 1.5px solid var(--oscuro); border-radius: 3px;
+    font-family: 'DM Sans', sans-serif; transition: all 0.2s; text-decoration: none; display: inline-block;
+  }
+  .franja-btn:hover { background: var(--terracota); border-color: var(--terracota); color: #fff; }
+  .franja-btn.ghost { background: transparent; color: var(--oscuro); }
+  .franja-btn.ghost:hover { background: var(--oscuro); border-color: var(--oscuro); color: var(--crema); }
+
+  /* ───────── SECCIONES ───────── */
+  .seccion { max-width: 980px; margin: 0 auto; padding: 56px 20px; }
+  .seccion-titulo { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: 30px; color: var(--oscuro); text-align: center; margin-bottom: 6px; }
+  .seccion-bajada { text-align: center; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--terracota); margin-bottom: 40px; }
+
+  /* ───────── CÓMO COMPRAR (lista vertical) ───────── */
+  .comprar { background: #fff; border-top: 1px solid rgba(0,0,0,0.05); border-bottom: 1px solid rgba(0,0,0,0.05); }
+  .pasos { max-width: 640px; margin: 0 auto; }
+  .paso {
+    display: flex; gap: 20px; align-items: flex-start;
+    padding: 24px 4px; border-bottom: 1px solid var(--crema); text-align: left;
+  }
+  .paso:last-of-type { border-bottom: none; }
+  .paso-num {
+    flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%;
+    background: var(--oscuro); color: var(--crema); display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif; font-size: 22px;
+  }
+  .paso-cuerpo { padding-top: 2px; }
+  .paso-titulo { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--oscuro); margin-bottom: 6px; line-height: 1.15; }
+  .paso-texto { font-size: 13.5px; color: var(--tostado); line-height: 1.7; }
+  .paso-texto a { color: var(--terracota); text-decoration: none; font-weight: 500; }
+  .comprar-cta {
+    display: inline-block; margin: 38px auto 0; background: var(--oscuro); color: var(--crema);
+    font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; padding: 14px 38px;
+    border-radius: 3px; text-decoration: none; transition: background 0.2s;
+  }
+  .comprar-cta:hover { background: var(--terracota); }
+
+  /* ───────── CATÁLOGO CANVA ───────── */
+  .canva-wrap {
+    position: relative; max-width: 680px; margin: 0 auto; aspect-ratio: 4 / 5;
+    border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,0,0,0.08);
+    background: #fff; box-shadow: 0 14px 40px rgba(58,46,39,0.08);
+  }
+  .canva-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+  .canva-placeholder {
+    width: 100%; height: 100%; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 14px; text-align: center;
+    padding: 36px; background: linear-gradient(135deg, var(--crema), #fff);
+  }
+  .canva-ph-titulo { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--oscuro); }
+  .canva-ph-texto { font-size: 13px; color: var(--tostado); line-height: 1.7; max-width: 320px; }
+  .canva-tap-hint {
+    position: absolute; inset: 0; z-index: 4; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    background: linear-gradient(135deg, var(--oscuro), var(--tostado));
+    text-align: center; padding: 30px;
+  }
+  .canva-tap-hint.oculto { display: none; }
+  .tap-circulo {
+    width: 64px; height: 64px; border-radius: 50%; border: 1.5px solid rgba(242,237,228,0.5);
+    display: flex; align-items: center; justify-content: center;
+    animation: latido 1.8s ease-in-out infinite;
+  }
+  .tap-circulo svg { width: 28px; height: 28px; color: var(--crema); }
+  @keyframes latido { 0%,100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.12); opacity: 1; } }
+  .tap-texto { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--crema); }
+  .tap-sub { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--arena); }
+  .canva-link-ver { display: inline-block; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--terracota); text-decoration: none; border-bottom: 1px solid var(--arena); padding-bottom: 3px; transition: color 0.2s; }
+  .canva-link-ver:hover { color: var(--oscuro); }
+
+  /* bloque marca */
+  .marca { background: var(--crema); padding: 50px 24px; text-align: center; }
+  .marca-texto { max-width: 620px; margin: 0 auto; font-size: 15px; line-height: 1.9; color: var(--tostado); font-weight: 300; }
+
+  /* ───────── FOOTER ───────── */
+  .site-footer { background: var(--oscuro); padding: 36px 24px; text-align: center; }
+  .footer-logo { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: 30px; letter-spacing: 0.2em; color: var(--crema); margin-bottom: 8px; }
+  .footer-info { font-size: 11px; color: var(--arena); line-height: 2; }
+  .footer-ig { font-size: 13px; color: var(--terracota); margin-top: 10px; text-decoration: none; }
+
+  /* ───────── BOTÓN FLOTANTE IG ───────── */
+  .ig-float {
+    position: fixed; bottom: 22px; right: 22px; z-index: 300;
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(45deg, #F58529, #DD2A7B 45%, #8134AF 75%, #515BD4);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.28); transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .ig-float:hover { transform: scale(1.08); box-shadow: 0 10px 28px rgba(0,0,0,0.35); }
+  .ig-float svg { width: 30px; height: 30px; color: #fff; }
+
+  /* ───────── MOBILE ───────── */
+  @media (max-width: 720px) {
+    .hamburger { display: flex; }
+    .nav-menu {
+      position: absolute; top: 100%; left: 0; right: 0; background: var(--oscuro);
+      flex-direction: column; align-items: stretch; gap: 0; padding: 8px 0 16px;
+      display: none; box-shadow: 0 14px 30px rgba(0,0,0,0.25);
+    }
+    .nav-menu.abierto { display: flex; }
+    .nav-link { padding: 14px 24px; text-align: left; }
+    .hero-label { letter-spacing: 0.3em; }
+    .banner-default::after { inset: 12px; }
+    .franja { gap: 8px; padding: 14px 12px; }
+    .franja-btn { padding: 11px 16px; letter-spacing: 0.2em; }
+    .ig-float { bottom: 18px; right: 18px; width: 52px; height: 52px; }
+    #catalogo { padding-left: 8px; padding-right: 8px; }
+    .canva-wrap { max-width: 100%; border-radius: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═════════════ NAV ═════════════ -->
+<nav class="nav">
+  <a class="nav-logo" href="#inicio" onclick="cerrarMenu()">envuelta</a>
+  <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+  <div class="nav-menu" id="navMenu">
+    <a class="nav-link" href="#inicio" onclick="cerrarMenu()">Inicio</a>
+    <a class="nav-link" href="#como-comprar" onclick="cerrarMenu()">Cómo comprar</a>
+    <a class="nav-link" href="#catalogo" onclick="cerrarMenu()">Colección</a>
+    <a class="nav-link" href="#contacto" onclick="cerrarMenu()">Contacto</a>
+  </div>
+</nav>
+
+<!-- ═════════════ INICIO ═════════════ -->
+<section id="inicio">
+
+  <!-- ★ BANNER (imagen fija): poné el nombre del archivo (ej: banner.jpg, en la misma carpeta)
+       o un link directo de imagen en data-banner-img. Si no carga, se muestra el diseño por defecto. -->
+  <div class="banner" data-banner-img="banner.jpg">
+    <img class="banner-img" alt="Envuelta">
+    <div class="banner-default">
+      <div class="hero-inner">
+        <div class="hero-label">complementos &amp; accesorios</div>
+        <div class="hero-logo">envuelta</div>
+        <div class="hero-divider"></div>
+        <div class="hero-sub">lo que te define</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- franja de botones -->
+  <div class="franja">
+    <a class="franja-btn" href="#catalogo">Ver colección</a>
+    <a class="franja-btn ghost" href="#como-comprar">Cómo comprar</a>
+    <a class="franja-btn ghost" href="#contacto">Más información</a>
+  </div>
+
+</section>
+
+<!-- ═════════════ CÓMO COMPRAR ═════════════ -->
+<section class="comprar" id="como-comprar">
+  <div class="seccion">
+    <h2 class="seccion-titulo">Cómo comprar</h2>
+    <p class="seccion-bajada">fácil y rápido</p>
+    <div class="pasos">
+      <div class="paso">
+        <div class="paso-num">1</div>
+        <div class="paso-cuerpo">
+          <div class="paso-titulo">Mirá la colección</div>
+          <div class="paso-texto">Elegí lo que más te guste de nuestra colección, siempre actualizada.</div>
+        </div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">2</div>
+        <div class="paso-cuerpo">
+          <div class="paso-titulo">Escribinos por DM</div>
+          <div class="paso-texto">Mandanos un mensaje a <a class="ig-link" target="_blank">@envuelta.ar</a> con lo que te interesa.</div>
+        </div>
+      </div>
+      <div class="paso">
+        <div class="paso-num">3</div>
+        <div class="paso-cuerpo">
+          <div class="paso-titulo">Pago y entrega</div>
+          <div class="paso-texto">Coordinamos el pago (efectivo o transferencia) y la entrega: envío en Córdoba por Uber Moto, o punto de retiro a coordinar.</div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;">
+      <a class="comprar-cta ig-link" target="_blank">Escribinos por Instagram</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ COLECCIÓN (CANVA) ═════════════ -->
+<section class="seccion" id="catalogo">
+  <h2 class="seccion-titulo">Nuestra colección</h2>
+  <p class="seccion-bajada">actualizada siempre</p>
+
+  <!-- ★ CATÁLOGO DE CANVA: el link va en data-canva (link de Canva que termina en /view) -->
+  <div class="canva-wrap" data-canva="https://www.canva.com/design/DAHNjAR98cw/JMVrpwq-aOVZ103o82AJsg/view">
+    <div class="canva-placeholder">
+      <div class="canva-ph-titulo">Acá va tu catálogo de Canva</div>
+      <div class="canva-ph-texto">Diseñalo en Canva, copiá el link y pegalo acá. Después lo editás cuando quieras y la página se actualiza sola.</div>
+    </div>
+    <div class="canva-tap-hint" id="canvaTap">
+      <div class="tap-circulo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.5V6a1.5 1.5 0 0 1 3 0v5"/><path d="M12 11V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M15 11V6.5a1.5 1.5 0 0 1 3 0V13a6 6 0 0 1-6 6h-1.5a4 4 0 0 1-3.2-1.6L5 14.5a1.5 1.5 0 0 1 2.4-1.8l1.1 1.3"/><path d="M9 11.5V9a1.5 1.5 0 0 0-3 0v3.5"/></svg>
+      </div>
+      <div class="tap-texto">Tocá para ver el catálogo</div>
+      <div class="tap-sub">15 páginas · actualizado</div>
+    </div>
+  </div>
+  <div style="text-align:center; margin-top:18px;">
+    <a class="canva-link-ver" href="https://www.canva.com/design/DAHNjAR98cw/JMVrpwq-aOVZ103o82AJsg/view" target="_blank">Abrir catálogo en pantalla completa</a>
+  </div>
+</section>
+
+<!-- bloque marca -->
+<div class="marca">
+  <p class="marca-texto">En Envuelta elegimos complementos y accesorios que te acompañan en cada ocasión y completan eso que te distingue. Escribinos y te ayudamos a elegir 🤍</p>
+</div>
+
+<!-- ═════════════ FOOTER / CONTACTO ═════════════ -->
+<footer class="site-footer" id="contacto">
+  <div class="footer-logo">envuelta</div>
+  <div class="footer-info">
+    Efectivo · Transferencia<br>
+    Envío en Córdoba por Uber Moto<br>
+    Punto de retiro a coordinar<br>
+    Córdoba, Argentina
+  </div>
+  <a class="footer-ig ig-link" target="_blank">@envuelta.ar</a>
+</footer>
+
+<!-- ═════════════ BOTÓN FLOTANTE INSTAGRAM ═════════════ -->
+<a class="ig-float ig-link" target="_blank" aria-label="Instagram de Envuelta">
+  <svg viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.3 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .3-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.3-1-.4-2.2-.1-1.3-.1-1.7-.1-4.9s0-3.6.1-4.9c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.3 2.2-.4 1.3-.1 1.7-.1 4.9-.1zm0 1.6c-3.1 0-3.5 0-4.8.1-1.1.1-1.7.2-2.1.4-.5.2-.9.4-1.2.8-.4.3-.6.7-.8 1.2-.2.4-.3 1-.4 2.1-.1 1.3-.1 1.7-.1 3.6s0 2.3.1 3.6c.1 1.1.2 1.7.4 2.1.2.5.4.9.8 1.2.3.4.7.6 1.2.8.4.2 1 .3 2.1.4 1.3.1 1.7.1 4.8.1s3.5 0 4.8-.1c1.1-.1 1.7-.2 2.1-.4.5-.2.9-.4 1.2-.8.4-.3.6-.7.8-1.2.2-.4.3-1 .4-2.1.1-1.3.1-1.7.1-3.6s0-2.3-.1-3.6c-.1-1.1-.2-1.7-.4-2.1-.2-.5-.4-.9-.8-1.2-.3-.4-.7-.6-1.2-.8-.4-.2-1-.3-2.1-.4-1.3-.1-1.7-.1-4.8-.1z"/>
+    <path d="M12 6.9a5.1 5.1 0 100 10.2 5.1 5.1 0 000-10.2zm0 8.4a3.3 3.3 0 110-6.6 3.3 3.3 0 010 6.6z"/>
+    <circle cx="17.4" cy="6.6" r="1.2"/>
+  </svg>
+</a>
+
+<script>
+/* ─── INSTAGRAM (link en botón flotante + textos) ─── */
+const IG = "https://www.instagram.com/envuelta.ar?igsh=MTRsMnM1dGE0OGRpaQ%3D%3D&utm_source=qr";
+document.querySelectorAll('.ig-link').forEach(a => a.href = IG);
+
+/* ─── MENÚ MÓVIL ─── */
+function toggleMenu() { document.getElementById('navMenu').classList.toggle('abierto'); }
+function cerrarMenu() { document.getElementById('navMenu').classList.remove('abierto'); }
+
+/* ─── BANNER CANVA (imagen fija, sin acceso para el visitante) ─── */
+const banner = document.querySelector('.banner');
+const bannerImg = banner.querySelector('.banner-img');
+const bnSrc = banner.dataset.bannerImg;
+if (bnSrc && bnSrc !== 'SIN-IMG') {
+  bannerImg.onload = () => banner.classList.add('con-img');
+  bannerImg.onerror = () => banner.classList.remove('con-img');
+  bannerImg.src = bnSrc;
+}
+
+/* ─── CATÁLOGO CANVA ─── */
+const cw = document.querySelector('.canva-wrap');
+let canva = cw.dataset.canva;
+if (canva && canva !== 'SIN-CANVA') {
+  if (!canva.includes('embed')) canva += (canva.includes('?') ? '&' : '?') + 'embed';
+  const ifr2 = document.createElement('iframe');
+  ifr2.src = canva; ifr2.loading = 'lazy'; ifr2.allow = 'fullscreen';
+  ifr2.setAttribute('allowfullscreen', 'allowfullscreen');
+  const ph = cw.querySelector('.canva-placeholder');
+  if (ph) ph.remove();
+  cw.insertBefore(ifr2, cw.firstChild);
+  const tap = document.getElementById('canvaTap');
+  if (tap) tap.addEventListener('click', () => tap.classList.add('oculto'));
+}
+</script>
+
+</body>
+</html>
